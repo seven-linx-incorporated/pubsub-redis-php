@@ -1,0 +1,47 @@
+{
+    "name": "sevenlinx/pubsub-redis-php",
+    "type": "library",
+    "description": "Redis driver in PubSub",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jay Are Galinada",
+            "email": "jayaregalinada@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "predis/predis": "^1.1",
+        "sevenlinx/pubsub-php": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "SevenLinX\\PubSub\\Redis\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SevenLinX\\PubSub\\Redis\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "prefer-stable": true,
+    "require-dev": {
+        "m6web/redis-mock": "^5.0",
+        "phpstan/phpstan": "^0.12.83",
+        "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "check-phpstan": "vendor/bin/phpstan analyze --ansi --memory-limit=2G",
+        "phpunit": "vendor/bin/phpunit",
+        "testing": [
+            "@check-phpstan",
+            "@phpunit"
+        ]
+    }
+}
