@@ -18,7 +18,10 @@ composer require sevenlinx/pubsub-redis-php
 
 You can check on `example/` directory
 
-This requires an existing redis server
+__/!\\ NOTE: This requires an existing redis server /!\\__
+
+* * *
+
 ## Testing
 ```shell
 composer run testing

@@ -7,6 +7,7 @@ use Closure;
 use Predis\Client;
 use SevenLinX\PubSub\Contracts\ChannelContract;
 use SevenLinX\PubSub\Contracts\MessageContract;
+use SevenLinX\PubSub\Generics\GenericPayload;
 use SevenLinX\PubSub\PubSubDriverInterface;
 use stdClass;
 
@@ -29,17 +30,14 @@ final class RedisDriver implements PubSubDriverInterface
     {
         /** @var string $payload */
         $payload = optional($message)->payload;
-        /** @var string $message */
-        $message = optional($message)->message;
         /** @var string $channel */
         $channel = optional($message)->channel;
 
-        if ($message === self::MESSAGE) {
-            $handler($this->payloadBuilder !== null
-                ? call_user_func($this->payloadBuilder, $payload, $channel)
-                : new Payload($payload, $channel)
-            );
-        }
+        //        $handler(new Payload($payload, $channel));
+        $handler($this->payloadBuilder !== null
+            ? call_user_func($this->payloadBuilder, $payload, $channel)
+            : new GenericPayload($payload, $channel)
+        );
     }
 
     public function publish(ChannelContract $channel, MessageContract $message): void
@@ -70,7 +68,9 @@ final class RedisDriver implements PubSubDriverInterface
 
         /** @var \stdClass $message */
         foreach ($loop as $message) {
-            $this->callHandler($message, $handler);
+            if (property_exists($message, 'kind') === true && $message->kind === self::MESSAGE) {
+                $this->callHandler($message, $handler);
+            }
         }
 
         unset($loop);
