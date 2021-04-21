@@ -14,6 +14,12 @@
         "predis/predis": "^1.1",
         "sevenlinx/pubsub-php": "dev-main"
     },
+    "require-dev": {
+        "mockery/mockery": "^1.4",
+        "phpstan/phpstan": "^0.12.83",
+        "phpstan/phpstan-mockery": "^0.12.13",
+        "phpunit/phpunit": "^9.5"
+    },
     "autoload": {
         "psr-4": {
             "SevenLinX\\PubSub\\Redis\\": "src/"
@@ -24,19 +30,18 @@
             "SevenLinX\\PubSub\\Redis\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true
     },
-    "prefer-stable": true,
-    "require-dev": {
-        "mockery/mockery": "^1.4",
-        "phpstan/phpstan": "^0.12.83",
-        "phpstan/phpstan-mockery": "^0.12.13",
-        "phpunit/phpunit": "^9.5"
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.0-dev"
+        }
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "scripts": {
         "phpstan": "vendor/bin/phpstan analyze --ansi --memory-limit=2G",
         "phpunit": "vendor/bin/phpunit --configuration phpunit.xml",
