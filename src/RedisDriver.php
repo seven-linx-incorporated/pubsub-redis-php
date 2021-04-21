@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace SevenLinX\PubSub\Redis;
 
 use Closure;
-use Predis\Client;
+use Predis\ClientInterface;
 use SevenLinX\PubSub\Contracts\ChannelContract;
 use SevenLinX\PubSub\Contracts\MessageContract;
 use SevenLinX\PubSub\Generics\GenericPayload;
@@ -22,7 +22,7 @@ final class RedisDriver implements PubSubDriverInterface
 
     private ?Closure $payloadBuilder = null;
 
-    public function __construct(private Client $client)
+    public function __construct(private ClientInterface $client)
     {
     }
 
@@ -33,7 +33,6 @@ final class RedisDriver implements PubSubDriverInterface
         /** @var string $channel */
         $channel = optional($message)->channel;
 
-        //        $handler(new Payload($payload, $channel));
         $handler($this->payloadBuilder !== null
             ? call_user_func($this->payloadBuilder, $payload, $channel)
             : new GenericPayload($payload, $channel)
