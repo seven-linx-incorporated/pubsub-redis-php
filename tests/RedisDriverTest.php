@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace SevenLinX\PubSub\Redis\Tests;
 
+use Closure;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use Predis\Client;
 use SevenLinX\PubSub\Generics\GenericChannel;
 use SevenLinX\PubSub\Generics\GenericMessage;
-use SevenLinX\PubSub\Generics\GenericPayload;
+use SevenLinX\PubSub\Redis\Contracts\ConnectorContract;
 use SevenLinX\PubSub\Redis\RedisDriver;
-use stdClass;
+use SevenLinX\PubSub\Redis\Tests\Stubs\HandlerStub;
 
 /**
  * @covers \SevenLinX\PubSub\Redis\RedisDriver
@@ -24,12 +24,13 @@ final class RedisDriverTest extends TestCase
         $channel = new GenericChannel('test');
         $message = new GenericMessage('message');
 
-        $client = Mockery::mock(Client::class);
-        $client->shouldReceive('publish')
-            ->with('test', 'message')
+        $connector = Mockery::mock(ConnectorContract::class);
+        $connector->shouldReceive('publish')
+            ->with($channel, $message)
+            ->andReturn(1)
             ->once();
 
-        $driver = new RedisDriver($client);
+        $driver = new RedisDriver($connector);
         $driver->publish($channel, $message);
     }
 
@@ -38,24 +39,27 @@ final class RedisDriverTest extends TestCase
         $this->expectNotToPerformAssertions();
 
         $channel = new GenericChannel('test');
-
-        $client = Mockery::mock(Client::class);
-        $client->shouldReceive('publish')
-            ->with('test', 'foo')
-            ->once();
-        $client->shouldReceive('publish')
-            ->with('test', 'bar')
-            ->once();
-        $client->shouldReceive('publish')
-            ->with('test', 'foo-bar')
-            ->once();
-
-        $driver = new RedisDriver($client);
-        $driver->publishBatch(
-            $channel,
+        $messages = [
             new GenericMessage('foo'),
             new GenericMessage('bar'),
-            new GenericMessage('foo-bar')
+            new GenericMessage('foo-bar'),
+        ];
+
+        $connector = Mockery::mock(ConnectorContract::class);
+        $connector->shouldReceive('publish')
+            ->with($channel, $messages[0])
+            ->once();
+        $connector->shouldReceive('publish')
+            ->with($channel, $messages[1])
+            ->once();
+        $connector->shouldReceive('publish')
+            ->with($channel, $messages[2])
+            ->once();
+
+        $driver = new RedisDriver($connector);
+        $driver->publishBatch(
+            $channel,
+            ...$messages
         );
     }
 
@@ -64,23 +68,15 @@ final class RedisDriverTest extends TestCase
         $this->expectNotToPerformAssertions();
 
         $channel = new GenericChannel('test');
+        $callable = Closure::fromCallable(new HandlerStub());
 
-        $loop = Mockery::mock('\\SevenLinX\\PubSub\\Redis\\Tests\\MockPubSubLoop[subscribe]');
-        $loop->shouldReceive('subscribe')
-            ->with('test')
+        $connector = Mockery::spy(ConnectorContract::class);
+        $connector
+            ->shouldReceive('subscribe')
+            ->with($channel, $callable)
             ->once();
 
-        $client = Mockery::mock(Client::class);
-        $client->shouldReceive('pubSubLoop')
-            ->once()
-            ->andReturn($loop);
-
-        $handler = Mockery::mock(stdClass::class);
-        $handler->shouldReceive('handle')
-            ->with(GenericPayload::class)
-            ->once();
-
-        $driver = new RedisDriver($client);
-        $driver->subscribe($channel, [$handler, 'handle']);
+        $driver = new RedisDriver($connector);
+        $driver->subscribe($channel, $callable);
     }
 }

@@ -11,14 +11,14 @@
     ],
     "require": {
         "php": "^8.0",
-        "predis/predis": "^1.1",
-        "sevenlinx/pubsub-php": "dev-main"
+        "sevenlinx/pubsub-php": "1.x-dev"
     },
     "require-dev": {
         "mockery/mockery": "^1.4",
         "phpstan/phpstan": "^0.12.83",
         "phpstan/phpstan-mockery": "^0.12.13",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "symfony/var-dumper": "^5.2"
     },
     "autoload": {
         "psr-4": {
@@ -37,7 +37,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "1.0-dev"
+            "dev-main": "1.x-dev"
         }
     },
     "minimum-stability": "dev",
@@ -49,5 +49,8 @@
             "@phpstan",
             "@phpunit"
         ]
+    },
+    "suggest": {
+        "predis/predis": "Required to use the predis client (^1.1)."
     }
 }
