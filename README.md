@@ -11,11 +11,11 @@
 
 ## Installation
 
-There are two (2) types for Redis client, that needs to small to utilize this package. 
+There are two (2) types for Redis client, that needs to install, see [Requirements](#requirements) 
 - [ext-phpredis](https://github.com/phpredis/phpredis) - PHP Extension for Redis, need to build PHP
 - [predis/predis](https://github.com/predis/predis) - Pure PHP client for Redis
 
-As soon you have the any of the client, you may:
+As soon you have any of the client, you may:
 
 ```sh
 composer require sevenlinx/pubsub-redis-php
